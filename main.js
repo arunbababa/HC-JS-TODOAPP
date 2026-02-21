@@ -1,117 +1,100 @@
-// 基本的に疎結合最重視
-// データの受け渡しを最小限に抑える
-// 操作対象のTODOをどう管理するかがカギ
-// グローバル変数に逃げてない?クラス化して各TODOをインスタンスとして管理しそれぞれのインスタンス内でしか
+class DeleteModal {
+  targetId = "";
 
-let notDoneCountNumber = 0;
-let doneCountNumber = 0;
-let allCountNumber = 0;
-let deleteTargetItemID = "";
-let deleteTargetItemName = "";
-let isdeleteTargetItemChecked = "";
+  open(event) {
+    this.targetId = event.target.name;
+    const targetName = event.target.value;
 
-const addTODO = () => {
-    const todoInput = document.getElementById("todoInput");
-    const todoText = todoInput.value;
+    document.getElementById("delete-target-item").textContent = targetName;
+    document.getElementById("delete-confirm-modal").style.display = "";
+  }
 
-    const ramdomNumberID = Math.random();
+  confirm() {
+    const targetItem = document.getElementById(this.targetId);
+    targetItem.remove();
+    this.close();
+    counter.updateDisplay();
+  }
 
-    const todoLabelItem = document.createElement("label");
-    todoLabelItem.textContent = todoText;
-    todoLabelItem.htmlFor = ramdomNumberID;
+  close() {
+    document.getElementById("delete-confirm-modal").style.display = "none";
+  }
+}
 
-    const todoCheckboxItem = document.createElement("input");
-    todoCheckboxItem.type = "checkbox";
-    todoCheckboxItem.value = todoText;
-    todoCheckboxItem.name = ramdomNumberID;
-    todoCheckboxItem.addEventListener("click", handleTODOCount);
-
-    const todoDeleteButton = document.createElement("button")
-    todoDeleteButton.value = todoText;
-    todoDeleteButton.textContent = "削除";
-    todoDeleteButton.name = ramdomNumberID;
-    todoDeleteButton.addEventListener("click", openTODODeleteModal)
-
-    const todoEditButton = document.createElement("button")
-    todoEditButton.value = todoText;
-    todoEditButton.textContent = "編集";
-    todoEditButton.name = ramdomNumberID;
-    todoEditButton.addEventListener("click", hanleEditMode)
-
+class Counter {
+  updateDisplay() {
     const todoList = document.getElementById("todoList");
-    const todoItem = document.createElement("li");
-    todoItem.id = ramdomNumberID;
-    todoItem.value = todoText;
+    const allCount = todoList.children.length;
+    const doneCount = todoList.querySelectorAll("input[type='checkbox']:checked").length;
+    const notDoneCount = allCount - doneCount;
 
-    todoItem.appendChild(todoCheckboxItem);
-    todoItem.appendChild(todoLabelItem);
-    todoItem.appendChild(todoDeleteButton);
-    todoItem.appendChild(todoEditButton);
-    todoList.appendChild(todoItem);
-
-    notDoneCountNumber += 1;
-    updateNotDoneCount();
-
-    allCountNumber += 1;
-    updateAllCountNumber();
-
-    todoInput.value = "";
+    document.getElementById("allTODOCount").textContent = allCount;
+    document.getElementById("doneTODOCount").textContent = doneCount;
+    document.getElementById("notDoneTODOCount").textContent = notDoneCount;
+  }
 }
 
-const handleTODOCount = (event) => {
-    const checkboxState = event.target.checked;
-    if (checkboxState) {
-        notDoneCountNumber -= 1;
-        updateNotDoneCount();
+const counter = new Counter();
+const deleteModal = new DeleteModal();
 
-        doneCountNumber += 1;
-        updateDoneCount();
-    } else {
-        notDoneCountNumber += 1;
-        updateNotDoneCount();
-
-        doneCountNumber -= 1;
-        updateDoneCount();
-    }
-}
-
-const updateDoneCount = () => {
-        const doneCount = document.getElementById("doneTODOCount");
-        doneCount.textContent = doneCountNumber;
+const addTodo = () => {
+    const TodoInput = document.getElementById("todoInput");
+    const TodoText = TodoInput.value.trim();
+    if (!TodoText) {
+        alert("Todoを入力してください");
+        return;
     }
 
-const updateNotDoneCount = () => {
-    const notDoneCount = document.getElementById("notDoneTODOCount");
-    notDoneCount.textContent = notDoneCountNumber;
+    const todoId = Math.random();
+
+    const TodoLabelItem = document.createElement("label");
+    TodoLabelItem.textContent = TodoText;
+    TodoLabelItem.htmlFor = todoId;
+
+    const TodoCheckboxItem = document.createElement("input");
+    TodoCheckboxItem.type = "checkbox";
+    TodoCheckboxItem.value = TodoText;
+    TodoCheckboxItem.name = todoId;
+    TodoCheckboxItem.addEventListener("click", handleTodoToggle);
+
+    const TodoDeleteButton = document.createElement("button")
+    TodoDeleteButton.value = TodoText;
+    TodoDeleteButton.textContent = "削除";
+    TodoDeleteButton.name = todoId;
+    TodoDeleteButton.addEventListener("click", (event) => deleteModal.open(event))
+
+    const TodoEditButton = document.createElement("button")
+    TodoEditButton.value = TodoText;
+    TodoEditButton.textContent = "編集";
+    TodoEditButton.name = todoId;
+    TodoEditButton.addEventListener("click", handleEditMode)
+
+    const TodoList = document.getElementById("todoList");
+    const TodoItem = document.createElement("li");
+    TodoItem.id = todoId;
+    TodoItem.value = TodoText;
+
+    TodoItem.appendChild(TodoCheckboxItem);
+    TodoItem.appendChild(TodoLabelItem);
+    TodoItem.appendChild(TodoDeleteButton);
+    TodoItem.appendChild(TodoEditButton);
+    TodoList.appendChild(TodoItem);
+
+    counter.updateDisplay();
+
+    TodoInput.value = "";
 }
 
-const updateAllCountNumber = () => {
-    const notDoneCount = document.getElementById("allTODOCount");
-    notDoneCount.textContent = allCountNumber;
+const handleTodoToggle = () => {
+    counter.updateDisplay();
 }
 
-const deleteTODO = () => {
-    const deleteItem = document.getElementById(deleteTargetItemID);
-    deleteItem.remove();
-    if (isdeleteTargetItemChecked){
-        doneCountNumber--;
-        updateDoneCount();
 
-    } else {
-      notDoneCountNumber--;
-      updateNotDoneCount();
-    }
 
-    closeTODODeleteModal();
-
-    allCountNumber--;
-    updateAllCountNumber();
-}
-
-const hanleEditMode = (event) => {
-    const deleteTargetItemID = event.target.name;
-    const item = document.getElementById(deleteTargetItemID)
-    const todoName = item.querySelector("label").textContent;
+const handleEditMode = (event) => {
+    const editTargetId = event.target.name;
+    const item = document.getElementById(editTargetId)
+    const TodoName = item.querySelector("label").textContent;
     
     Array.from(item.children).forEach(child => {
       child.style.display = "none";
@@ -119,7 +102,7 @@ const hanleEditMode = (event) => {
 
     const editInput = document.createElement("input");
     editInput.type = "text";
-    editInput.value = todoName; 
+    editInput.value = TodoName; 
     editInput.classList.add("edit-field");
 
     const saveButton = document.createElement("button");
@@ -153,27 +136,4 @@ const hanleEditMode = (event) => {
     item.appendChild(editInput);
     item.appendChild(saveButton);
     item.appendChild(cancelButton);
-}
-
-const openTODODeleteModal = (event) => {
-    const deleteModal = document.getElementById("delete-confirm-modal")
-    deleteModal.style.display = "";
-
-    deleteTargetItemID = event.target.name; // globalにセットし、delete()で使えるようにする
-  
-    const checkbox = event.target.parentElement.querySelector("input[type='checkbox']");
-    isdeleteTargetItemChecked = checkbox.checked;
-
-    const deleteTargetItem = document.getElementById("delete-target-item");
-    deleteTargetItemName = event.target.value;
-    deleteTargetItem.textContent = deleteTargetItemName;
-}
-
-const cancelDeleteTodo = () => {
-  closeTODODeleteModal();
-}
-
-const closeTODODeleteModal = () => {
-    const deleteModal = document.getElementById("delete-confirm-modal")
-    deleteModal.style.display = "none";
 }

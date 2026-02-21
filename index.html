@@ -8,11 +8,9 @@
 </head>
 
 <body>
-    <!-- TODO新規作成inputフィールド -->
     <input type="text" id="todoInput">
-    <button onclick="addTODO()">追加</button>
+    <button onclick="addTodo()">追加</button>
 
-    <!-- 追加したTODOの表示フィールド -->
     <h2>TODO一覧</h2>
     <div class="count">
         <p>全てのタスク: <span id="allTODOCount">0</span></p>
@@ -20,14 +18,13 @@
         <p>未完了: <span id="notDoneTODOCount">0</span></p>
     </div>
     <ul id="todoList">
-        <!-- ここにTODOが追加される -->
     </ul>
 
     <div id="delete-confirm-modal" style="display: none;">
         <p>本当に削除しますか？</p>
         <p id="delete-target-item"></p>
-        <button id="confirmDelete" onclick="deleteTODO()">はい</button>
-        <button id="cancelDelete" onclick="closeTODODeleteModal()">いいえ</button>
+        <button onclick="deleteModal.confirm()">はい</button>
+        <button onclick="deleteModal.close()">いいえ</button>
     </div>
 </body>
 
