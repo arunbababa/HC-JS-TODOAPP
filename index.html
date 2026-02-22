@@ -8,23 +8,23 @@
 </head>
 
 <body>
-    <input type="text" id="todoInput">
-    <button onclick="addTodo()">追加</button>
+    <input type="text" id="todo-input">
+    <button id="add-button">追加</button>
 
     <h2>TODO一覧</h2>
-    <div class="count">
-        <p>全てのタスク: <span id="allTODOCount">0</span></p>
-        <p>完了: <span id="doneTODOCount">0</span></p>
-        <p>未完了: <span id="notDoneTODOCount">0</span></p>
+    <div>
+        <p>全てのタスク: <span id="all-todo-count">0</span></p>
+        <p>完了: <span id="done-todo-count">0</span></p>
+        <p>未完了: <span id="not-done-todo-count">0</span></p>
     </div>
-    <ul id="todoList">
+    <ul id="todo-list">
     </ul>
 
     <div id="delete-confirm-modal" style="display: none;">
         <p>本当に削除しますか？</p>
         <p id="delete-target-item"></p>
-        <button onclick="deleteModal.confirm()">はい</button>
-        <button onclick="deleteModal.close()">いいえ</button>
+        <button id="delete-confirm-button">はい</button>
+        <button id="delete-cancel-button">いいえ</button>
     </div>
 </body>
 
